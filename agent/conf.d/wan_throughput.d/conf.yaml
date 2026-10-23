@@ -1,0 +1,36 @@
+init_config:
+
+# One instance per circuit. Each test offers UDP at the required rate for
+# `duration` seconds and checks what actually arrived. The Agent runs the
+# instances one after another, so keep 3 x duration under the interval.
+#
+#   server            iperf3 server at the far end of the circuit
+#   bind_ip           source address to test from (iperf3 -B)
+#   required_mbps     the bar the circuit has to clear (default: TARGET_RATE_MBPS from .env)
+#   target_mbps       offered UDP load (defaults to required_mbps)
+#   protocol          udp (default, sustain a fixed rate) | tcp (push as fast as possible)
+#   reverse           true = far end sends to the site (download, iperf3 -R)
+#   max_lost_percent  UDP loss above this fails the circuit (default 1.0)
+#   tolerance_percent achieved may be this far under required (default 5.0)
+#
+# The three networks here are three DESTINATIONS. In production the Agent has
+# one NIC and the edge appliance's path policy picks the circuit per destination.
+
+instances:
+  - server: 10.81.1.20
+    bind_ip: 10.81.1.10
+    duration: 30
+    min_collection_interval: 120
+    tags: [circuit:primary, site:demo]
+
+  - server: 10.81.2.20
+    bind_ip: 10.81.2.10
+    duration: 30
+    min_collection_interval: 120
+    tags: [circuit:secondary, site:demo]
+
+  - server: 10.81.3.20
+    bind_ip: 10.81.3.10
+    duration: 30
+    min_collection_interval: 120
+    tags: [circuit:cellular, site:demo]

@@ -1,0 +1,27 @@
+init_config:
+
+# The far end of each circuit runs a real net-snmp agent. Its eth0 counters
+# move with the iperf3 traffic, so this is an independent measurement of the
+# same load. (snmpsim would have frozen, recorded counters, which is useless here.)
+
+instances:
+  - ip_address: 10.81.1.20
+    community_string: public
+    collect_device_metadata: true
+    namespace: ndm-demo
+    min_collection_interval: 10
+    tags: [circuit:primary, site:demo]
+
+  - ip_address: 10.81.2.20
+    community_string: public
+    collect_device_metadata: true
+    namespace: ndm-demo
+    min_collection_interval: 10
+    tags: [circuit:secondary, site:demo]
+
+  - ip_address: 10.81.3.20
+    community_string: public
+    collect_device_metadata: true
+    namespace: ndm-demo
+    min_collection_interval: 10
+    tags: [circuit:cellular, site:demo]

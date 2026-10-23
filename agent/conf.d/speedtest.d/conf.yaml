@@ -1,0 +1,21 @@
+init_config:
+
+# Option A: Ookla speedtest. This measures the Agent's real internet path to an
+# Ookla server, not the simulated circuits. Each run pushes as much traffic as
+# the link will take, so keep the interval long.
+
+instances:
+  - min_collection_interval: 900
+    tags: [site:demo, test:ookla]
+
+    # server_id: pin one Ookla server. Without it Ookla picks from a rotating
+    # pool, so the destination IP keeps changing. With it, an SD-WAN
+    # path policy can match one stable IP and force the test onto a chosen
+    # circuit. List the IDs with: speedtest --servers
+    # server_id: <SERVER_ID>
+
+    # interface / ip: bind the SOURCE of the test. Network Path can't do this,
+    # this check can. At a site with a dedicated test interface or VLAN, it
+    # decides which circuit carries the test.
+    # interface: eth0
+    # ip: 10.81.3.10

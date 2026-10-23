@@ -1,0 +1,45 @@
+#!/bin/sh
+# Usage: set-rate <rate> <delay>     e.g. set-rate 80mbit 70ms
+#
+# Shapes eth0 egress (this endpoint -> the site) and makes SNMP report the
+# same capacity via ifSpeed/ifHighSpeed. Safe to run on a live container.
+# Never fails hard: without NET_ADMIN the circuit just runs unshaped.
+RATE=${1:?usage: set-rate <rate> <delay>}
+DELAY=${2:?usage: set-rate <rate> <delay>}
+
+# Two bands: SNMP replies (udp sport 161) skip the shaping, everything else goes
+# through netem. In production NDM polls the edge device from the LAN, not across
+# the circuit under test, so polls shouldn't queue behind the test traffic.
+shape() {
+  tc qdisc del dev eth0 root 2>/dev/null
+  tc qdisc add dev eth0 root handle 1: prio bands 2 priomap 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 &&
+  tc qdisc add dev eth0 parent 1:2 handle 20: netem rate "$RATE" delay "$DELAY" &&
+  tc filter add dev eth0 parent 1: protocol ip u32 \
+     match ip protocol 17 0xff match ip sport 161 0xffff flowid 1:1
+}
+
+if shape 2>/tmp/tc.err; then
+  echo "[$CIRCUIT] shaped eth0: rate $RATE delay $DELAY"
+else
+  echo "[$CIRCUIT] WARNING: could not shape eth0 ($(cat /tmp/tc.err))." >&2
+  echo "[$CIRCUIT] WARNING: is cap_add NET_ADMIN set? Serving iperf3 UNSHAPED." >&2
+fi
+
+# Advertise the circuit capacity in IF-MIB so NDM shows utilisation against it.
+case "$RATE" in
+  *gbit) BPS=$(( ${RATE%gbit} * 1000000000 )) ;;
+  *mbit) BPS=$(( ${RATE%mbit} * 1000000 )) ;;
+  *kbit) BPS=$(( ${RATE%kbit} * 1000 )) ;;
+  *)     BPS=0 ;;
+esac
+cat > /etc/snmp/snmpd.conf <<EOF
+agentAddress udp:161
+rocommunity  public
+sysName      ${CIRCUIT}-circuit
+sysLocation  Demo site - ${CIRCUIT} WAN
+interface    eth0 6 ${BPS}
+dontLogTCPWrappersConnects yes
+EOF
+
+# Reload snmpd if it is already running (live rate change).
+[ -f /run/snmpd.pid ] && kill -HUP "$(cat /run/snmpd.pid)" 2>/dev/null || true

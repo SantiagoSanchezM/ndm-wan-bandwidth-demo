@@ -1,0 +1,53 @@
+# One simulated site, three WAN circuits.
+# The three networks are three destinations, one per circuit. They are not a
+# picture of a real site's network: in production the Agent has one NIC and the
+# edge appliance steers each destination onto a circuit.
+
+x-endpoint: &endpoint
+  build: ./endpoint
+  cap_add: [NET_ADMIN]   # needed for tc; without it the endpoint runs unshaped
+  restart: unless-stopped
+
+services:
+  agent:
+    build: ./agent
+    hostname: ndm-demo-site
+    environment:
+      DD_API_KEY: ${DD_API_KEY}
+      DD_SITE: ${DD_SITE:-datadoghq.com}
+      DD_HOSTNAME: ndm-demo-site
+      DD_TAGS: site:demo
+      DD_APM_ENABLED: "false"
+      TARGET_RATE_MBPS: ${TARGET_RATE_MBPS:-50}
+    networks:
+      primary:   { ipv4_address: 10.81.1.10 }
+      secondary: { ipv4_address: 10.81.2.10 }
+      cellular:  { ipv4_address: 10.81.3.10 }
+    depends_on: [primary, secondary, cellular]
+    restart: unless-stopped
+
+  primary:
+    <<: *endpoint
+    environment: { CIRCUIT: primary, RATE: 200mbit, DELAY: 8ms }
+    networks:
+      primary: { ipv4_address: 10.81.1.20 }
+
+  secondary:
+    <<: *endpoint
+    environment: { CIRCUIT: secondary, RATE: 80mbit, DELAY: 25ms }
+    networks:
+      secondary: { ipv4_address: 10.81.2.20 }
+
+  cellular:
+    <<: *endpoint
+    environment: { CIRCUIT: cellular, RATE: 30mbit, DELAY: 70ms }   # below the 50 Mbps bar on purpose
+    networks:
+      cellular: { ipv4_address: 10.81.3.20 }
+
+networks:
+  primary:
+    ipam: { config: [{ subnet: 10.81.1.0/24 }] }
+  secondary:
+    ipam: { config: [{ subnet: 10.81.2.0/24 }] }
+  cellular:
+    ipam: { config: [{ subnet: 10.81.3.0/24 }] }

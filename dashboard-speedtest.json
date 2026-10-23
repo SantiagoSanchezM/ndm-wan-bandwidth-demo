@@ -1,0 +1,585 @@
+{
+  "title": "Internet link capacity (Ookla speedtest): can it run the site?",
+  "description": "Option A of the NDM WAN bandwidth demo: the Ookla speedtest community integration, graded against 50 Mbps per direction.",
+  "widgets": [
+    {
+      "id": 1751260859427132,
+      "definition": {
+        "title": "Can the internet link carry the site? (bar: 50 Mbps each way)",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 1823546838088659,
+            "definition": {
+              "type": "note",
+              "content": "The Ookla speedtest runs every 15 minutes over the Agent's **real internet path**. Each direction is graded separately: it **passes** at 47.5 Mbps or more (95% of 50, the same tolerance as the iperf3 check).",
+              "background_color": "transparent",
+              "font_size": "14",
+              "text_align": "left",
+              "show_tick": false,
+              "has_padding": true
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 6,
+              "height": 1
+            }
+          },
+          {
+            "id": 7985949330612476,
+            "definition": {
+              "title": "DOWNLOAD: 1 = PASS, 0 = FAIL",
+              "title_align": "center",
+              "time": {},
+              "type": "query_value",
+              "requests": [
+                {
+                  "response_format": "scalar",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.download.bandwidth.bit_per_sec{site:demo}",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "clamp_max(clamp_min(q1 - 47500000 + 1, 0), 1)",
+                      "number_format": {
+                        "unit": {
+                          "type": "canonical_unit"
+                        }
+                      }
+                    }
+                  ],
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 1,
+                      "palette": "white_on_green"
+                    },
+                    {
+                      "comparator": "<",
+                      "value": 1,
+                      "palette": "white_on_red"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": false,
+              "precision": 0
+            },
+            "layout": {
+              "x": 0,
+              "y": 1,
+              "width": 3,
+              "height": 2
+            }
+          },
+          {
+            "id": 1329031980667227,
+            "definition": {
+              "title": "UPLOAD: 1 = PASS, 0 = FAIL",
+              "title_align": "center",
+              "time": {},
+              "type": "query_value",
+              "requests": [
+                {
+                  "response_format": "scalar",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.upload.bandwidth.bit_per_sec{site:demo}",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "clamp_max(clamp_min(q1 - 47500000 + 1, 0), 1)",
+                      "number_format": {
+                        "unit": {
+                          "type": "canonical_unit"
+                        }
+                      }
+                    }
+                  ],
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 1,
+                      "palette": "white_on_green"
+                    },
+                    {
+                      "comparator": "<",
+                      "value": 1,
+                      "palette": "white_on_red"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": false,
+              "precision": 0
+            },
+            "layout": {
+              "x": 3,
+              "y": 1,
+              "width": 3,
+              "height": 2
+            }
+          },
+          {
+            "id": 4726753170889906,
+            "definition": {
+              "title": "Download achieved",
+              "title_align": "center",
+              "type": "query_value",
+              "requests": [
+                {
+                  "response_format": "scalar",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.download.bandwidth.bit_per_sec{site:demo}",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "q1 / 1000000"
+                    }
+                  ],
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 47.5,
+                      "palette": "white_on_green"
+                    },
+                    {
+                      "comparator": "<",
+                      "value": 47.5,
+                      "palette": "white_on_red"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": false,
+              "custom_unit": "Mbps",
+              "precision": 1
+            },
+            "layout": {
+              "x": 0,
+              "y": 3,
+              "width": 3,
+              "height": 2
+            }
+          },
+          {
+            "id": 4707538648597829,
+            "definition": {
+              "title": "Upload achieved",
+              "title_align": "center",
+              "type": "query_value",
+              "requests": [
+                {
+                  "response_format": "scalar",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.upload.bandwidth.bit_per_sec{site:demo}",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "q1 / 1000000"
+                    }
+                  ],
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 47.5,
+                      "palette": "white_on_green"
+                    },
+                    {
+                      "comparator": "<",
+                      "value": 47.5,
+                      "palette": "white_on_red"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": false,
+              "custom_unit": "Mbps",
+              "precision": 1
+            },
+            "layout": {
+              "x": 3,
+              "y": 3,
+              "width": 3,
+              "height": 2
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 6,
+        "height": 6
+      }
+    },
+    {
+      "id": 4617713635277258,
+      "definition": {
+        "title": "Achieved vs required",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 7187654914973432,
+            "definition": {
+              "title": "Download and upload Mbps vs the requirement",
+              "show_legend": true,
+              "legend_layout": "horizontal",
+              "legend_columns": [
+                "value",
+                "max"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.download.bandwidth.bit_per_sec{site:demo}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "q1 / 1000000",
+                      "alias": "Download"
+                    }
+                  ],
+                  "style": {
+                    "palette": "cool",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "line"
+                },
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.upload.bandwidth.bit_per_sec{site:demo}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "q1 / 1000000",
+                      "alias": "Upload"
+                    }
+                  ],
+                  "style": {
+                    "palette": "purple",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "line"
+                }
+              ],
+              "markers": [
+                {
+                  "label": "required 50 Mbps",
+                  "value": "y = 50",
+                  "display_type": "error dashed"
+                }
+              ]
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 5,
+              "height": 2
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 6,
+        "y": 0,
+        "width": 5,
+        "height": 3
+      }
+    },
+    {
+      "id": 8460522194930892,
+      "definition": {
+        "title": "Which server did Ookla pick?",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 6958470492419022,
+            "definition": {
+              "title": "Download Mbps by Ookla server",
+              "show_legend": true,
+              "legend_layout": "horizontal",
+              "legend_columns": [
+                "value",
+                "max"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.download.bandwidth.bit_per_sec{site:demo} by {server_name,server_id}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "q1 / 1000000",
+                      "alias": "download"
+                    }
+                  ],
+                  "style": {
+                    "palette": "dog_classic",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "bars"
+                }
+              ],
+              "markers": [
+                {
+                  "label": "required 50 Mbps",
+                  "value": "y = 50",
+                  "display_type": "error dashed"
+                }
+              ]
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 3,
+              "height": 2
+            }
+          },
+          {
+            "id": 8798631044934172,
+            "definition": {
+              "title": "Servers used in this time window",
+              "time": {},
+              "type": "query_table",
+              "requests": [
+                {
+                  "response_format": "scalar",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "aggregator": "avg",
+                      "query": "avg:speedtest.download.bandwidth.bit_per_sec{site:demo} by {server_name,isp}"
+                    },
+                    {
+                      "data_source": "metrics",
+                      "name": "q2",
+                      "aggregator": "avg",
+                      "query": "avg:speedtest.upload.bandwidth.bit_per_sec{site:demo} by {server_name,isp}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "alias": "avg download Mbps",
+                      "formula": "q1 / 1000000"
+                    },
+                    {
+                      "alias": "avg upload Mbps",
+                      "formula": "q2 / 1000000"
+                    }
+                  ],
+                  "sort": {
+                    "count": 25,
+                    "order_by": [
+                      {
+                        "type": "formula",
+                        "index": 0,
+                        "order": "desc"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "has_search_bar": "never"
+            },
+            "layout": {
+              "x": 3,
+              "y": 0,
+              "width": 3,
+              "height": 2
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 6,
+        "y": 3,
+        "width": 6,
+        "height": 3
+      }
+    },
+    {
+      "id": 3584837410092117,
+      "definition": {
+        "title": "Pass / fail history",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 7149747054942834,
+            "definition": {
+              "title": "Download: meets requirement (1 = pass)",
+              "show_legend": true,
+              "legend_layout": "horizontal",
+              "legend_columns": [
+                "value",
+                "max"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.download.bandwidth.bit_per_sec{site:demo}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "clamp_max(clamp_min(q1 - 47500000 + 1, 0), 1)",
+                      "alias": "Download"
+                    }
+                  ],
+                  "style": {
+                    "palette": "cool",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "bars"
+                }
+              ],
+              "yaxis": {
+                "include_zero": true,
+                "min": "0",
+                "max": "1"
+              }
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 2
+            }
+          },
+          {
+            "id": 2240227045226713,
+            "definition": {
+              "title": "Upload: meets requirement (1 = pass)",
+              "show_legend": true,
+              "legend_layout": "horizontal",
+              "legend_columns": [
+                "value",
+                "max"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "q1",
+                      "query": "avg:speedtest.upload.bandwidth.bit_per_sec{site:demo}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "clamp_max(clamp_min(q1 - 47500000 + 1, 0), 1)",
+                      "alias": "Upload"
+                    }
+                  ],
+                  "style": {
+                    "palette": "cool",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "bars"
+                }
+              ],
+              "yaxis": {
+                "include_zero": true,
+                "min": "0",
+                "max": "1"
+              }
+            },
+            "layout": {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 2
+            }
+          },
+          {
+            "id": 7858195287086611,
+            "definition": {
+              "type": "note",
+              "content": "There's no SNMP overlay here. The speedtest crosses the laptop's real internet connection, and no device in this demo sees that traffic. At a real site, point the SNMP check at the edge appliance's WAN interface and the same overlay as the iperf3 dashboard applies.",
+              "background_color": "transparent",
+              "font_size": "14",
+              "text_align": "left",
+              "show_tick": false,
+              "has_padding": true
+            },
+            "layout": {
+              "x": 8,
+              "y": 0,
+              "width": 4,
+              "height": 2
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 6,
+        "width": 12,
+        "height": 3
+      }
+    }
+  ],
+  "template_variables": [],
+  "layout_type": "ordered",
+  "notify_list": [],
+  "pause_auto_refresh": false,
+  "reflow_type": "fixed"
+}
